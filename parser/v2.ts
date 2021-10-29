@@ -12,8 +12,6 @@ type TypeParsed<ResultType> = {
   reason?: string;
 };
 
-type TypeInput<T> = Record<keyof T, InputType<T>>;
-
 type TypeCallback<T> = (input: InputType<T>) => TypeParsed<T>;
 
 type TypeCallbacks<T> = {
@@ -61,7 +59,7 @@ const ParseError = (reason: string) => {
 };
 
 class Parsers {
-  static parseString<T>(input: InputType<T>): TypeParsed<string> {
+  static string<T>(input: InputType<T>): TypeParsed<string> {
     if (typeof input === "string") {
       if (input.includes("dog")) {
         return { parsed: false, reason: "Must not contain dog" };
@@ -71,7 +69,7 @@ class Parsers {
     return GENERIC_TYPE_PARSE_ERROR;
   }
 
-  static parseNumber<T>(input: InputType<T>): TypeParsed<number> {
+  static number<T>(input: InputType<T>): TypeParsed<number> {
     let n: undefined | number | string = undefined;
     if (typeof input === "string") {
       n = Number(input);
@@ -88,7 +86,7 @@ class Parsers {
   }
 
   // static parseObject<T>(callbacks: TypeCallbacks<T>): TypeCallback<T> {
-  static parseObject<T>(callbacks: TypeCallbacks<T>) {
+  static object<T>(callbacks: TypeCallbacks<T>) {
     return function (inputs: T): TypeResults<T> {
       const collection = collect(inputs, callbacks);
       const arr = (Object.keys(collection) as Array<keyof T>).map(
@@ -109,14 +107,14 @@ class Parsers {
   }
 }
 
-const parser = Parsers.parseObject({
-  dog: Parsers.parseNumber,
-  cat: Parsers.parseString,
-  obj: Parsers.parseObject({
-    sup: Parsers.parseNumber,
+const parser = Parsers.object({
+  dog: Parsers.number,
+  cat: Parsers.string,
+  obj: Parsers.object({
+    sup: Parsers.number,
   }),
-  horse: Parsers.parseString,
-  rat: Parsers.parseString,
+  horse: Parsers.string,
+  rat: Parsers.string,
 });
 
 const results = parser({
