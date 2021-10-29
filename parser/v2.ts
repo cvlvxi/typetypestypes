@@ -116,6 +116,7 @@ const parser = Parsers.parseObject({
     sup: Parsers.parseNumber,
   }),
   horse: Parsers.parseString,
+  rat: Parsers.parseString,
 });
 
 const results = parser({
@@ -125,13 +126,17 @@ const results = parser({
     sup: 1,
   },
   yo: "meh",
+  rat: "dog",
 });
 
 console.log(results);
 
-// {
-//   dog: { parsed: false, reason: "Can't parse this string" },
-//   cat: { parsed: true, value: "hello" },
-//   obj: { sup: { parsed: true, value: 1 } },
-//   yo: { parsed: false, reason: "No associated callback parser function" }
-// }
+/**
+ {
+  dog: { parsed: false, reason: "Can't parse this string" },
+  cat: { parsed: true, value: "hello" },
+  obj: { sup: { parsed: true, value: 1 } },
+  yo: { parsed: false, reason: "No associated callback parser function" },
+  rat: { parsed: false, reason: "Must not contain dog" }
+}
+ */
