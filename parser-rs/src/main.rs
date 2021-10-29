@@ -32,9 +32,8 @@ fn error<'a, T>(reason: &'a str) -> TypeParsed<T> {
     }
 }
 
-trait Parser {
-    type Item;
-    fn parse(&self) -> TypeParsed<Self::Item>;
+trait Parser<T> {
+    fn parse(&self) -> TypeParsed<T>;
 }
 
 impl Parser for i32 {
@@ -45,20 +44,6 @@ impl Parser for i32 {
             _ => TypeParsed {
                 parsed: true,
                 value: Some(*self),
-                reason: None,
-            },
-        }
-    }
-}
-
-impl Parser for AsRef<str> {
-    type Item = AsRef<str>;
-    fn parse(self) -> TypeParsed<&'a String> {
-        match self {
-            "dog" => error("Can't be a dog"),
-            _ => TypeParsed {
-                parsed: true,
-                value: Some(self),
                 reason: None,
             },
         }

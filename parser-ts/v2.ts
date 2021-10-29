@@ -26,39 +26,40 @@ type TypeResults<T> = {
   [K in keyof T]: TypeParsed<T[K]>;
 };
 
-function collect<T>(
-  inputs: T,
-  callbacks: TypeCallbacks<T>,
-): TypeCollection<T> {
-  type keyT = keyof T;
-  const keyInputCallbackArray = (Object.keys(inputs) as Array<keyT>).map(
-    (key) => {
-      return [key, {
-        input: inputs[key],
-        callback: callbacks[key],
-      }];
-    },
-  );
-  return Object.fromEntries(
-    keyInputCallbackArray,
-  ) as unknown as TypeCollection<T>;
-}
 
-const GENERIC_TYPE_PARSE_ERROR = {
-  parsed: false,
-  reason: "Can't parse this type",
-};
+class Parser {
+  static GENERIC_TYPE_PARSE_ERROR = {
+    parsed: false,
+    reason: "Can't parse this type",
+  };
 
-const NO_CALLBACK_FUNC_ERROR = {
-  parsed: false,
-  reason: "No associated callback parser function",
-};
+  static NO_CALLBACK_FUNC_ERROR = {
+    parsed: false,
+    reason: "No associated callback parser function",
+  };
 
-const ParseError = (reason: string) => {
-  return { parsed: false, reason: reason };
-};
+  static ParseError = (reason: string) => {
+    return { parsed: false, reason: reason };
+  };
 
-class Parsers {
+
+  static collect<T>(
+    inputs: T,
+    callbacks: TypeCallbacks<T>,
+  ): TypeCollection<T> {
+    type keyT = keyof T;
+    const keyInputCallbackArray = (Object.keys(inputs) as Array<keyT>).map(
+      (key) => {
+        return [key, {
+          input: inputs[key],
+          callback: callbacks[key],
+        }];
+      },
+    );
+    return Object.fromEntries(
+      keyInputCallbackArray,
+    ) as unknown as TypeCollection<T>;
+  }
   static string<T>(input: InputType<T>): TypeParsed<string> {
     if (typeof input === "string") {
       if (input.includes("dog")) {
@@ -66,21 +67,21 @@ class Parsers {
       }
       return { parsed: true, value: input };
     }
-    return GENERIC_TYPE_PARSE_ERROR;
+    return Parser.GENERIC_TYPE_PARSE_ERROR;
   }
 
   static number<T>(input: InputType<T>): TypeParsed<number> {
     let n: undefined | number | string = undefined;
     if (typeof input === "string") {
       n = Number(input);
-      if (Number.isNaN(n)) return ParseError("Can't parse this string");
+      if (Number.isNaN(n)) return Parser.ParseError("Can't parse Parser string");
     } else if (typeof input === "number") {
       n = input;
     } else {
-      return GENERIC_TYPE_PARSE_ERROR;
+      return Parser.GENERIC_TYPE_PARSE_ERROR;
     }
     if (n === 0) {
-      return ParseError("Number can't be 0");
+      return Parser.ParseError("Number can't be 0");
     }
     return { parsed: true, value: n };
   }
@@ -88,7 +89,7 @@ class Parsers {
   // static parseObject<T>(callbacks: TypeCallbacks<T>): TypeCallback<T> {
   static object<T>(callbacks: TypeCallbacks<T>) {
     return function (inputs: T): TypeResults<T> {
-      const collection = collect(inputs, callbacks);
+      const collection = Parser.collect(inputs, callbacks);
       const arr = (Object.keys(collection) as Array<keyof T>).map(
         (key) => {
           const { input, callback }: {
@@ -96,7 +97,7 @@ class Parsers {
             callback: TypeCallback<T>;
           } = collection[key];
           if (!callback) {
-            return [key, NO_CALLBACK_FUNC_ERROR];
+            return [key, Parser.NO_CALLBACK_FUNC_ERROR];
           }
           return [key, callback(input)];
         },
@@ -108,15 +109,15 @@ class Parsers {
 }
 
 
-let parser = Parsers.object({
-  dog: Parsers.number,
-  cat: Parsers.string,
-  obj: Parsers.object({
-    sup: Parsers.number,
-    chicken: Parsers.number,
+let parser = Parser.object({
+  dog: Parser.number,
+  cat: Parser.string,
+  obj: Parser.object({
+    sup: Parser.number,
+    chicken: Parser.number,
   }),
-  horse: Parsers.string,
-  rat: Parsers.string,
+  horse: Parser.string,
+  rat: Parser.string,
 });
 
 const results = parser({
