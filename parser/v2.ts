@@ -107,11 +107,13 @@ class Parsers {
   }
 }
 
-const parser = Parsers.object({
+
+let parser = Parsers.object({
   dog: Parsers.number,
   cat: Parsers.string,
   obj: Parsers.object({
     sup: Parsers.number,
+    chicken: Parsers.number,
   }),
   horse: Parsers.string,
   rat: Parsers.string,
@@ -122,12 +124,15 @@ const results = parser({
   cat: "hello",
   obj: {
     sup: 1,
+    chicken: "100",
+    eel: "hello"
   },
   yo: "meh",
   rat: "dog",
 });
 
 console.log(results);
+
 
 /**
  {
