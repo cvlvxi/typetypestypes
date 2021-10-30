@@ -1,0 +1,3 @@
+[submodule "third-party/typebox/typebox"]
+	path = third-party/typebox/typebox
+	url = https://github.com/sinclairzx81/typebox.git

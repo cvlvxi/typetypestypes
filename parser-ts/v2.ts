@@ -18,6 +18,7 @@ type TypeCallbacks<T> = {
   [K in keyof T]: TypeCallback<T[K]>;
 };
 
+
 type TypeCollection<T> = {
   [K in keyof T]: { input: InputType<T>; callback: TypeCallback<T> };
 };
@@ -60,6 +61,7 @@ class Parser {
       keyInputCallbackArray,
     ) as unknown as TypeCollection<T>;
   }
+
   static string<T>(input: InputType<T>): TypeParsed<string> {
     if (typeof input === "string") {
       if (input.includes("dog")) {
@@ -136,10 +138,14 @@ console.log(results);
 
 
 /**
- {
+{
   dog: { parsed: false, reason: "Can't parse this string" },
   cat: { parsed: true, value: "hello" },
-  obj: { sup: { parsed: true, value: 1 } },
+  obj: {
+    sup: { parsed: true, value: 1 },
+    chicken: { parsed: true, value: 100 },
+    eel: { parsed: false, reason: "No associated callback parser function" }
+  },
   yo: { parsed: false, reason: "No associated callback parser function" },
   rat: { parsed: false, reason: "Must not contain dog" }
 }
