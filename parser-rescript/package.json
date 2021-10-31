@@ -1,0 +1,9 @@
+{
+  "name": "parser-rescript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "rescript": "^9.1.4"
+  }
+}
